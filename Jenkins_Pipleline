@@ -6,13 +6,13 @@ pipeline{
 				stage('Pull git repo on master'){
 					agent {label 'masterNode'}
 					steps{
-						git 'https://github.com/shlomojohn/DevopsGit.git'
+						git 'https://github.com/Senthil4v/devopsproject.git'
 					}
 				}
 				stage('Pull git repo on slave'){
 					agent {label 'slaveNode'}
 					steps{
-						git 'https://github.com/shlomojohn/DevopsGit.git'
+						git 'https://github.com/Senthil4v/devopsproject.git'
 					}
 				}
 			}
