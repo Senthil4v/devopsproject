@@ -1,0 +1,39 @@
+pipeline{
+    agent none
+    stages{
+		stage('Pull git'){
+			parallel{
+				stage('Pull git repo on master'){
+					agent {label 'masterNode'}
+					steps{
+						git 'https://github.com/shlomojohn/DevopsGit.git'
+					}
+				}
+				stage('Pull git repo on slave'){
+					agent {label 'slaveNode'}
+					steps{
+						git 'https://github.com/shlomojohn/DevopsGit.git'
+					}
+				}
+			}
+		}
+        stage('Check and install slave dependencies'){
+            agent { label 'masterNode'}
+            steps{
+                ansiblePlaybook credentialsId: 'jenkin-root', disableHostKeyChecking: true, installation: 'myAnsible', inventory: 'dynamic_inventory.inv', playbook: 'slave_setup.yml'
+            }
+        }
+        stage('Build docker image'){
+            agent { label 'masterNode'}
+            steps{
+                ansiblePlaybook credentialsId: 'jenkin-root', disableHostKeyChecking: true, installation: 'myAnsible', inventory: 'dynamic_inventory.inv', playbook: 'slave_web_build.yml'
+            }
+        }
+        stage('Deploy docker container'){
+            agent { label 'masterNode'}
+            steps{
+                ansiblePlaybook credentialsId: 'jenkin-root', disableHostKeyChecking: true, installation: 'myAnsible', inventory: 'dynamic_inventory.inv', playbook: 'slave_web_deploy.yml'
+            }
+        }
+    }
+}

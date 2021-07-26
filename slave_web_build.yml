@@ -1,0 +1,7 @@
+---
+- hosts: slave
+  become: true
+  become_user: root
+  tasks:
+  - name: "build_docker_image"
+    command: chdir=/devops/workspace/Senthil_job_pipeline docker build -t websrv .
